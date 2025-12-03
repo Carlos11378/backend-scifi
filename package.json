@@ -1,26 +1,21 @@
 {
-  "name": "backend-scifidaily",
+  "name": "sci-fi-portfolio",
   "version": "1.0.0",
+  "description": "Um site sci-fi moderno e interativo",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "fetch-feeds": "node src/jobs/fetchFeeds.js",
-    "prisma": "prisma"
+    "build": "echo 'Build completo'"
   },
+  "keywords": ["sci-fi", "portfolio", "futuristic", "space"],
+  "author": "MiniMax Agent",
+  "license": "MIT",
   "dependencies": {
-    "bcrypt": "^5.1.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.0",
-    "node-cron": "^3.0.2",
-    "prisma": "^5.0.0",
-    "rss-parser": "^3.12.0",
-    "web-push": "^3.6.7",
-    "@prisma/client": "^5.0.0"
+    "path": "^0.12.7"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "nodemon": "^3.0.1"
   }
 }
