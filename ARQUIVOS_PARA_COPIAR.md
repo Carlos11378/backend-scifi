@@ -1,3 +1,49 @@
+# 📋 ARQUIVOS PARA COPIAR NO GITHUB
+
+## ⚠️ SUBSTITUA NO SEU REPOSITÓRIO OS SEGUINTES ARQUIVOS:
+
+### 1. 📦 package.json (SUBSTITUIR)
+**Caminho no GitHub:** `package.json`
+
+**Conteúdo:**
+```json
+{
+  "name": "sci-fi-portfolio",
+  "version": "1.0.0",
+  "description": "Um site sci-fi moderno e interativo",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "build": "echo 'Build completo'",
+    "heroku-postbuild": "echo 'Build para Heroku/Render concluído'"
+  },
+  "engines": {
+    "node": "18.x",
+    "npm": ">=6.0.0"
+  },
+  "keywords": ["sci-fi", "portfolio", "futuristic", "space"],
+  "author": "MiniMax Agent",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/sci-fi-portfolio.git"
+  },
+  "homepage": "https://sci-fi-portfolio.render.app"
+}
+```
+
+### 2. 🚀 index.js (CRIAR/SUBSTITUIR)
+**Caminho no GitHub:** `index.js` (na raiz do projeto)
+
+**Conteúdo:**
+```javascript
 const express = require('express');
 const path = require('path');
 
@@ -73,3 +119,38 @@ app.listen(PORT, () => {
 
 // Exportar app para testes
 module.exports = app;
+```
+
+### 3. 📁 public/index.html (CRIAR)
+**Caminho no GitHub:** `public/index.html`
+
+### 4. 🎨 public/styles.css (CRIAR)
+**Caminho no GitHub:** `public/styles.css`
+
+### 5. ⚡ public/script.js (CRIAR)
+**Caminho no GitHub:** `public/script.js`
+
+---
+
+## 🔄 PASSOS PARA ATUALIZAR:
+
+1. **Copie cada arquivo acima**
+2. **Cole no seu repositório GitHub** (substituindo o conteúdo atual)
+3. **Commit e Push:**
+   ```bash
+   git add .
+   git commit -m "🚀 CORREÇÃO: Estrutura corrigida para Render"
+   git push origin main
+   ```
+
+## ✅ CONFIGURAÇÃO NO RENDER:
+
+- **Build Command:** `npm install`
+- **Start Command:** `npm start`
+- **Variables:**
+  - `NODE_ENV=production`
+  - `PORT=10000`
+
+## 🎯 RESULTADO:
+
+Após o deploy, o erro "Cannot find module" estará resolvido e o site funcionará perfeitamente!
