@@ -1,0 +1,26 @@
+{
+  "name": "backend-scifidaily",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "fetch-feeds": "node src/jobs/fetchFeeds.js",
+    "prisma": "prisma"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "node-cron": "^3.0.2",
+    "prisma": "^5.0.0",
+    "rss-parser": "^3.12.0",
+    "web-push": "^3.6.7",
+    "@prisma/client": "^5.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
