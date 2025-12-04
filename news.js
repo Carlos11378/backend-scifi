@@ -1,24 +1,18 @@
 // news.js
 import fetch from "node-fetch";
 
-const NEWSAPI_KEY = process.env.NEWSAPI_KEY || ""; // coloque sua chave no .env
+const GNEWS_API_KEY = process.env.GNEWS_API_KEY || "";
 
 export async function getNews(category = "") {
   try {
-    const q = category ? encodeURIComponent(category) : "";
-    // Top headlines em português (ajuste pageSize se quiser)
-    let url = `https://newsapi.org/v2/top-headlines?language=pt&pageSize=12&apiKey=${NEWSAPI_KEY}`;
-
-    if (q) {
-      url += `&q=${q}`;
-    } else {
-      // fallback opcional para manter conteúdo tech/sci-fi
-      url += `&category=technology`;
-    }
+    console.log("API KEY:", GNEWS_API_KEY ? "Carregada ✓" : "VAZIA ✗");
+    
+    const q = category ? encodeURIComponent(category) : "tecnologia";
+    const url = `https://gnews.io/api/v4/search?q=${q}&lang=pt&max=12&apikey=${GNEWS_API_KEY}`;
 
     const resp = await fetch(url);
     if (!resp.ok) {
-      console.error("NewsAPI retornou não-ok:", resp.status, resp.statusText);
+      console.error("GNews retornou erro:", resp.status, resp.statusText);
       return [];
     }
 
