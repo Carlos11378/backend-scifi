@@ -88,6 +88,8 @@
             border-radius: 5px;
             font-size: 0.9rem;
             transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
         }
 
         .nav-btn:hover {
@@ -195,9 +197,99 @@
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
         }
 
+        .btn-secondary {
+            background: linear-gradient(45deg, #ff00ff, #8000ff);
+            color: #fff;
+        }
+
         .btn-container {
             text-align: center;
             margin: 30px 0;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background: linear-gradient(45deg, #1a1a1a, #0a0a0a);
+            margin: 5% auto;
+            padding: 30px;
+            border: 2px solid rgba(0, 255, 255, 0.5);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close {
+            color: #00ffff;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #ff00ff;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #00ffff;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #00ffff;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* API Status */
+        .api-status {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .api-status.online {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: rgba(0, 255, 0, 0.5);
+        }
+
+        .api-status.offline {
+            background: rgba(255, 0, 0, 0.1);
+            border-color: rgba(255, 0, 0, 0.5);
         }
 
         /* Formulário */
@@ -246,6 +338,7 @@
             .nav { position: static; margin-bottom: 20px; }
             .form { grid-template-columns: 1fr; }
             .grid { grid-template-columns: 1fr; }
+            .modal-content { margin: 10% auto; width: 95%; }
         }
 
         /* Animação de entrada */
@@ -257,21 +350,6 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        /* Status */
-        .status {
-            text-align: center;
-            padding: 20px;
-            background: rgba(0, 255, 0, 0.1);
-            border: 1px solid rgba(0, 255, 0, 0.3);
-            border-radius: 15px;
-            margin: 30px 0;
-        }
-
-        .status h3 {
-            color: #00ff00;
-            margin-bottom: 10px;
-        }
     </style>
 </head>
 <body>
@@ -280,10 +358,11 @@
 
     <!-- Navegação -->
     <nav class="nav">
-        <a href="#inicio" class="nav-btn">Início</a>
-        <a href="#sobre" class="nav-btn">Sobre</a>
-        <a href="#projetos" class="nav-btn">Projetos</a>
-        <a href="#contato" class="nav-btn">Contato</a>
+        <button class="nav-btn" onclick="showSection('inicio')">Início</button>
+        <button class="nav-btn" onclick="showSection('sobre')">Sobre</button>
+        <button class="nav-btn" onclick="showSection('projetos')">Projetos</button>
+        <button class="nav-btn" onclick="showSection('contato')">Contato</button>
+        <button class="nav-btn" onclick="showNews()">📰 News</button>
     </nav>
 
     <div class="container">
@@ -293,15 +372,15 @@
             <p class="subtitle">Explore as fronteiras da tecnologia e inovação</p>
             
             <div class="btn-container">
-                <a href="#sobre" class="btn">Explorar</a>
-                <a href="#projetos" class="btn">Ver Demo</a>
+                <a href="#sobre" class="btn" onclick="showSection('sobre')">Explorar</a>
+                <a href="#projetos" class="btn" onclick="showSection('projetos')">Ver Demo</a>
             </div>
         </header>
 
-        <!-- Status -->
-        <div class="status">
-            <h3>🚀 Sistema Online</h3>
-            <p>✅ Portal funcionando perfeitamente no Vercel</p>
+        <!-- Status das APIs -->
+        <div class="api-status" id="apiStatus">
+            <h3>🔄 Verificando APIs...</h3>
+            <p>Status do sistema sendo verificado</p>
         </div>
 
         <!-- Sobre -->
@@ -314,6 +393,10 @@
                     <div class="feature-content">
                         <h3>Inteligência Artificial</h3>
                         <p>Tecnologias de ponta em machine learning e automação</p>
+                        <div class="btn-container">
+                            <button class="btn" onclick="openModal('ai')">Ver Detalhes</button>
+                            <button class="btn btn-secondary" onclick="showNews('ai')">Ver Notícias AI</button>
+                        </div>
                     </div>
                 </div>
                 
@@ -322,6 +405,10 @@
                     <div class="feature-content">
                         <h3>IoT Conectado</h3>
                         <p>Internet das coisas para um mundo mais inteligente</p>
+                        <div class="btn-container">
+                            <button class="btn" onclick="openModal('iot')">Ver Detalhes</button>
+                            <button class="btn btn-secondary" onclick="showNews('iot')">Ver Notícias IoT</button>
+                        </div>
                     </div>
                 </div>
                 
@@ -330,6 +417,10 @@
                     <div class="feature-content">
                         <h3>Web Futurista</h3>
                         <p>Interfaces interativas e experiência imersiva</p>
+                        <div class="btn-container">
+                            <button class="btn" onclick="openModal('web')">Ver Detalhes</button>
+                            <button class="btn btn-secondary" onclick="showNews('web')">Ver Notícias Web</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -344,7 +435,8 @@
                     <h3>⚡ NeuroLink Interface</h3>
                     <p>Sistema de comunicação neural avançada</p>
                     <div class="btn-container">
-                        <a href="#" class="btn">Ver Projeto</a>
+                        <button class="btn" onclick="openProject('neuro')">Ver Projeto</button>
+                        <button class="btn btn-secondary" onclick="showNews('neuro')">Notícias Neuro</button>
                     </div>
                 </div>
                 
@@ -352,7 +444,8 @@
                     <h3>🌌 Quantum Computing Hub</h3>
                     <p>Plataforma de computação quântica</p>
                     <div class="btn-container">
-                        <a href="#" class="btn">Ver Projeto</a>
+                        <button class="btn" onclick="openProject('quantum')">Ver Projeto</button>
+                        <button class="btn btn-secondary" onclick="showNews('quantum')">Notícias Quantum</button>
                     </div>
                 </div>
                 
@@ -360,7 +453,8 @@
                     <h3>🛸 Space Station Alpha</h3>
                     <p>Simulação de colônia espacial</p>
                     <div class="btn-container">
-                        <a href="#" class="btn">Ver Projeto</a>
+                        <button class="btn" onclick="openProject('space')">Ver Projeto</button>
+                        <button class="btn btn-secondary" onclick="showNews('space')">Notícias Space</button>
                     </div>
                 </div>
             </div>
@@ -371,13 +465,14 @@
             <h2>📞 Contato Futurista</h2>
             
             <div class="form">
-                <input type="text" placeholder="Seu nome">
-                <input type="email" placeholder="Seu email">
-                <textarea placeholder="Sua mensagem"></textarea>
+                <input type="text" id="nome" placeholder="Seu nome">
+                <input type="email" id="email" placeholder="Seu email">
+                <textarea id="mensagem" placeholder="Sua mensagem"></textarea>
             </div>
             
             <div class="btn-container">
-                <a href="#" class="btn">Enviar Mensagem</a>
+                <button class="btn" onclick="enviarMensagem()">Enviar Mensagem</button>
+                <button class="btn btn-secondary" onclick="showNews()">Ver Todas as Notícias</button>
             </div>
         </section>
 
@@ -388,7 +483,97 @@
         </footer>
     </div>
 
+    <!-- Modais -->
+    <div id="aiModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('ai')">&times;</span>
+            <h2>🤖 Inteligência Artificial</h2>
+            <p>Nossa seção de IA inclui:</p>
+            <ul style="text-align: left; margin: 20px 0;">
+                <li>🧠 Machine Learning Avançado</li>
+                <li>🤖 Redes Neurais Profundas</li>
+                <li>🔮 Predição e Análise de Dados</li>
+                <li>🎯 Automação Inteligente</li>
+                <li>💬 Processamento de Linguagem Natural</li>
+            </ul>
+            <div class="btn-container">
+                <button class="btn" onclick="showNews('ai')">Ver Notícias AI</button>
+                <button class="btn btn-secondary" onclick="closeModal('ai')">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="iotModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('iot')">&times;</span>
+            <h2>📡 IoT Conectado</h2>
+            <p>Tecnologias IoT implementadas:</p>
+            <ul style="text-align: left; margin: 20px 0;">
+                <li>🌐 Sensores Inteligentes</li>
+                <li>🔗 Protocolos de Comunicação</li>
+                <li>☁️ Edge Computing</li>
+                <li>📊 Monitoramento em Tempo Real</li>
+                <li>🏠 Cidades Inteligentes</li>
+            </ul>
+            <div class="btn-container">
+                <button class="btn" onclick="showNews('iot')">Ver Notícias IoT</button>
+                <button class="btn btn-secondary" onclick="closeModal('iot')">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="webModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('web')">&times;</span>
+            <h2>🌐 Web Futurista</h2>
+            <p>Soluções web de última geração:</p>
+            <ul style="text-align: left; margin: 20px 0;">
+                <li>🎨 Interfaces Imersivas</li>
+                <li>⚡ Performance Otimizada</li>
+                <li>📱 Design Responsivo Avançado</li>
+                <li>🌟 Animações CSS/JS</li>
+                <li>🔧 Progressive Web Apps</li>
+            </ul>
+            <div class="btn-container">
+                <button class="btn" onclick="showNews('web')">Ver Notícias Web</button>
+                <button class="btn btn-secondary" onclick="closeModal('web')">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de projetos -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeProject()">&times;</span>
+            <h2 id="projectTitle">Projeto</h2>
+            <div id="projectContent">
+                <p>Carregando informações do projeto...</p>
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-secondary" onclick="closeProject()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de notícias -->
+    <div id="newsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeNews()">&times;</span>
+            <h2 id="newsTitle">📰 Notícias Sci-Fi</h2>
+            <div id="newsContent" class="loading">
+                Carregando notícias...
+            </div>
+            <div class="btn-container">
+                <button class="btn" onclick="loadNews()">🔄 Atualizar</button>
+                <button class="btn btn-secondary" onclick="closeNews()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        let currentSection = 'inicio';
+        let currentNewsCategory = '';
+
         // Sistema de partículas
         function initParticles() {
             const canvas = document.getElementById('particles');
@@ -416,15 +601,12 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
                 particles.forEach(particle => {
-                    // Atualizar posição
                     particle.x += particle.vx;
                     particle.y += particle.vy;
                     
-                    // Bounce nas bordas
                     if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
                     if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
                     
-                    // Desenhar partícula
                     ctx.beginPath();
                     ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
                     ctx.fillStyle = `rgba(0, 255, 255, ${particle.opacity})`;
@@ -436,8 +618,246 @@
             
             animate();
         }
-        
-        // Smooth scroll
+
+        // Navegação por seções
+        function showSection(sectionId) {
+            // Esconder todas as seções
+            document.querySelectorAll('header, section').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Mostrar seção selecionada
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.style.display = 'block';
+                target.scrollIntoView({ behavior: 'smooth' });
+                currentSection = sectionId;
+            } else {
+                // Se é header, mostrar tudo
+                document.querySelectorAll('header, section').forEach(el => {
+                    el.style.display = 'block';
+                });
+                document.querySelector('.header').scrollIntoView({ behavior: 'smooth' });
+                currentSection = 'inicio';
+            }
+        }
+
+        // Modais
+        function openModal(modalId) {
+            document.getElementById(modalId + 'Modal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId + 'Modal').style.display = 'none';
+        }
+
+        // Projetos
+        function openProject(projectId) {
+            const projects = {
+                'neuro': {
+                    title: '⚡ NeuroLink Interface',
+                    content: `
+                        <p><strong>Status:</strong> 🟢 Em Desenvolvimento</p>
+                        <p><strong>Objetivo:</strong> Sistema revolucionário de comunicação neural direta</p>
+                        <p><strong>Funcionalidades:</strong></p>
+                        <ul style="text-align: left; margin: 20px 0;">
+                            <li>🧠 Interface direta cérebro-computador</li>
+                            <li>📡 Processamento de sinais neurais</li>
+                            <li>🎯 Tradução de pensamentos em comandos</li>
+                            <li>⚡ Velocidade de resposta sub-milisegundo</li>
+                            <li>🔒 Segurança neural avançada</li>
+                        </ul>
+                        <p><strong>Tecnologias:</strong> Neuralink, EEG, Machine Learning, Real-time Processing</p>
+                        <div class="btn-container">
+                            <button class="btn" onclick="showNews('neuro')">Ver Notícias Neuro</button>
+                        </div>
+                    `
+                },
+                'quantum': {
+                    title: '🌌 Quantum Computing Hub',
+                    content: `
+                        <p><strong>Status:</strong> 🟡 Planejamento Avançado</p>
+                        <p><strong>Objetivo:</strong> Plataforma de computação quântica acessível</p>
+                        <p><strong>Funcionalidades:</strong></p>
+                        <ul style="text-align: left; margin: 20px 0;">
+                            <li>⚛️ Simulador de Qubits</li>
+                            <li>🔮 Algoritmos Quânticos</li>
+                            <li>📊 Análise de Performance</li>
+                            <li>🌐 Interface Web Intuitiva</li>
+                            <li>🎓 Educação Quântica</li>
+                        </ul>
+                        <p><strong>Tecnologias:</strong> Qiskit, Quantum Algorithms, Cloud Computing</p>
+                        <div class="btn-container">
+                            <button class="btn" onclick="showNews('quantum')">Ver Notícias Quantum</button>
+                        </div>
+                    `
+                },
+                'space': {
+                    title: '🛸 Space Station Alpha',
+                    content: `
+                        <p><strong>Status:</strong> 🔵 Concept Art</p>
+                        <p><strong>Objetivo:</strong> Simulação completa de colônia espacial</p>
+                        <p><strong>Funcionalidades:</strong></p>
+                        <ul style="text-align: left; margin: 20px 0;">
+                            <li>🏗️ Construção Modular</li>
+                            <li>🌱 Sistema de Vida</li>
+                            <li>⚡ Gestão de Energia</li>
+                            <li>👥 Simulação Populacional</li>
+                            <li>🔬 Laboratórios Espaciais</li>
+                        </ul>
+                        <p><strong>Tecnologias:</strong> Unity 3D, Physics Simulation, AI Population</p>
+                        <div class="btn-container">
+                            <button class="btn" onclick="showNews('space')">Ver Notícias Space</button>
+                        </div>
+                    `
+                }
+            };
+
+            const project = projects[projectId];
+            if (project) {
+                document.getElementById('projectTitle').textContent = project.title;
+                document.getElementById('projectContent').innerHTML = project.content;
+                document.getElementById('projectModal').style.display = 'block';
+            }
+        }
+
+        function closeProject() {
+            document.getElementById('projectModal').style.display = 'none';
+        }
+
+        // Notícias
+        function showNews(category = '') {
+            currentNewsCategory = category;
+            const titles = {
+                '': '📰 Todas as Notícias Sci-Fi',
+                'ai': '🤖 Notícias de Inteligência Artificial',
+                'iot': '📡 Notícias de IoT',
+                'web': '🌐 Notícias de Web Futurista',
+                'neuro': '⚡ Notícias NeuroLink',
+                'quantum': '🌌 Notícias Quantum Computing',
+                'space': '🛸 Notícias Space Station'
+            };
+
+            document.getElementById('newsTitle').textContent = titles[category] || titles[''];
+            document.getElementById('newsContent').innerHTML = '<div class="loading">Carregando notícias...</div>';
+            document.getElementById('newsModal').style.display = 'block';
+            
+            loadNews();
+        }
+
+        function closeNews() {
+            document.getElementById('newsModal').style.display = 'none';
+        }
+
+        async function loadNews() {
+            try {
+                document.getElementById('newsContent').innerHTML = '<div class="loading">Carregando notícias...</div>';
+                
+                let url = 'https://backend-scifi.vercel.app/api/news';
+                if (currentNewsCategory && currentNewsCategory !== '') {
+                    url += `?category=${currentNewsCategory}`;
+                }
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.success && data.data && data.data.articles) {
+                    const newsHtml = data.data.articles.map((article, index) => `
+                        <div style="border: 1px solid rgba(0, 255, 255, 0.3); padding: 20px; margin: 15px 0; border-radius: 10px;">
+                            <h3 style="color: #00ffff; margin-bottom: 10px;">${article.title || 'Notícia ' + (index + 1)}</h3>
+                            <p style="margin-bottom: 10px;">${article.description || 'Descrição não disponível'}</p>
+                            <p style="font-size: 0.9em; color: rgba(0, 255, 255, 0.7);">
+                                📅 ${article.publishedAt || 'Data não disponível'}
+                            </p>
+                            ${article.url ? `<a href="${article.url}" target="_blank" class="btn" style="margin-top: 10px;">🔗 Ler Mais</a>` : ''}
+                        </div>
+                    `).join('');
+                    
+                    document.getElementById('newsContent').innerHTML = newsHtml || '<p>Nenhuma notícia encontrada.</p>';
+                } else {
+                    throw new Error('Formato de dados inválido');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar notícias:', error);
+                document.getElementById('newsContent').innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <p>⚠️ Erro ao carregar notícias</p>
+                        <p style="font-size: 0.9em; color: rgba(0, 255, 255, 0.7);">
+                            Verifique sua conexão ou tente novamente
+                        </p>
+                        <button class="btn" onclick="loadNews()">🔄 Tentar Novamente</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Formulário
+        function enviarMensagem() {
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            const mensagem = document.getElementById('mensagem').value;
+
+            if (nome && email && mensagem) {
+                alert(`🚀 Mensagem enviada com sucesso!\n\nNome: ${nome}\nEmail: ${email}\n\nObrigado pelo contato! Voltaremos em breve.`);
+                document.getElementById('nome').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('mensagem').value = '';
+            } else {
+                alert('⚠️ Por favor, preencha todos os campos!');
+            }
+        }
+
+        // Verificar status das APIs
+        async function checkAPIs() {
+            try {
+                const response = await fetch('https://backend-scifi.vercel.app/api/status');
+                const data = await response.json();
+                
+                const apiStatus = document.getElementById('apiStatus');
+                apiStatus.className = 'api-status online';
+                apiStatus.innerHTML = `
+                    <h3>✅ Sistema Online</h3>
+                    <p>Portal Sci-Fi funcionando perfeitamente no Vercel</p>
+                    <p style="font-size: 0.9em; color: rgba(0, 255, 0, 0.8);">
+                        🔄 Status: ${data.status} | 🌐 Plataforma: ${data.platform}
+                    </p>
+                `;
+            } catch (error) {
+                const apiStatus = document.getElementById('apiStatus');
+                apiStatus.className = 'api-status offline';
+                apiStatus.innerHTML = `
+                    <h3>⚠️ Problema de Conexão</h3>
+                    <p>APIs temporariamente indisponíveis</p>
+                    <button class="btn" onclick="checkAPIs()">🔄 Verificar Novamente</button>
+                `;
+            }
+        }
+
+        // Fechar modais ao clicar fora
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // Inicializar
+        window.addEventListener('load', () => {
+            initParticles();
+            checkAPIs();
+            showSection('inicio');
+        });
+
+        // Responsive
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('particles');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Smooth scroll para links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -446,41 +866,6 @@
                     target.scrollIntoView({ behavior: 'smooth' });
                 }
             });
-        });
-        
-        // Intersection Observer para animações
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        // Observar elementos para animação
-        document.querySelectorAll('.fade-in').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(20px)';
-            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-            observer.observe(el);
-        });
-        
-        // Inicializar
-        window.addEventListener('load', () => {
-            initParticles();
-        });
-        
-        // Responsive
-        window.addEventListener('resize', () => {
-            const canvas = document.getElementById('particles');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
         });
     </script>
 </body>
