@@ -1,7 +1,8 @@
+// server.js
 import express from "express";
 import cors from "cors";
-import fetch from "node-fetch";
 import dotenv from "dotenv";
+import { getNews } from "./news.js";
 
 dotenv.config();
 
@@ -14,21 +15,31 @@ app.get("/", (req, res) => {
   res.send("Backend de Ficção Científica está funcionando!");
 });
 
-// ROTA PARA NOTÍCIAS
-import { getNews } from "./news.js";
-
+// ROTA LEGADA (compatibilidade)
 app.get("/news", async (req, res) => {
   try {
-    const articles = await getNews();
-    res.json({ articles });
+    const category = req.query.category || "";
+    const articles = await getNews(category);
+    res.json({ success: true, data: { articles } });
   } catch (error) {
-    console.error("Erro ao buscar notícias:", error);
-    res.status(500).json({ error: "Erro ao obter notícias" });
+    console.error("Erro ao buscar notícias (legacy):", error);
+    res.status(500).json({ success: false, error: "Erro ao obter notícias" });
   }
 });
 
-// Porta do Render
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log("Servidor rodando na porta " + PORT);
+// ROTA QUE O FRONT-END USA (/api/news)
+app.get("/api/news", async (req, res) => {
+  try {
+    const category = req.query.category || "";
+    const articles = await getNews(category);
+    res.json({ success: true, data: { articles } });
+  } catch (error) {
+    console.error("Erro ao buscar notícias (/api/news):", error);
+    res.status(500).json({ success: false, error: "Erro ao obter notícias" });
+  }
 });
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`API rodando na porta ${PORT}`));
+
+
