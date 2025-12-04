@@ -1,10 +1,8 @@
 // server.js
+import "dotenv/config";  // ← MUDE PARA ISSO (carrega imediatamente)
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import { getNews } from "./news.js";
-
-dotenv.config();
 
 const app = express();
 app.use(cors());
